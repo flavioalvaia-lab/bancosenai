@@ -24,7 +24,12 @@ namespace BancoSENAIAPI.Controllers
 
             }
 
-            string pastaCliente
+            string pastaCliente = Path.Combine(_caminhoRaiz, codigoCliente.ToString());
+
+            if(!Directory.Exists(pastaCliente))
+            {
+                Directory.CreateDirectory(pastaCliente);
+            }
         }
     }
 }
