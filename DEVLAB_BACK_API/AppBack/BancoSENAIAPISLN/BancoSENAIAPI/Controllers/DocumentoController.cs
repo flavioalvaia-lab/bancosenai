@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BancoSENAIAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BancoSENAIAPI.Controllers
 {
@@ -11,7 +12,7 @@ namespace BancoSENAIAPI.Controllers
             "ClienteArquivos"
             );
 
-        private static List<Models.DocumentoMetadado> _documentosMetadados = new List<Models.DocumentoMetadados>();
+        private static List<Models.DocumentoMetadado> _documentosMetadados = new List<Models.DocumentoMetadado>();
 
         private static int _nextId = 1;
 
@@ -32,14 +33,28 @@ namespace BancoSENAIAPI.Controllers
             }
 
             string extensao = Path.GetExtension(arquivo.FileName);
-            string nomeOriginal Path.GetFileNameWithoutExtension(arquivo.FileName);
+            string nomeOriginal = Path.GetFileNameWithoutExtension(arquivo.FileName);
             string novoNome = $"{codigoCliente}_{nomeOriginal}_{Guid.NewGuid()}{extensao}";
-            string caminhoFinal Path.Combine(pastaCliente, novoNome);
-            using (var stream = new FileStream(caminho Final, FileMode.Create))
+            string caminhoFinal = Path.Combine(pastaCliente, novoNome);
+            using (var stream = new FileStream(caminhoFinal, FileMode.Create))
             {
                 await arquivo.CopyToAsync(stream);
             }
-        } }
+            var documentoMetadados = new Models.DocumentoMetadado
+            {
+                Id = _nextId++,
+                Name = nomeOriginal,
+                Extensao = extensao,
+                Caminho = caminhoFinal,
+                CodigoCliente = codigoCliente
+            };
+            _documentosMetadados.Add(documentoMetadados);
+            return Ok(new { mensagem = "Documento anexado com sucesso", arquivoSalvo = novoNome });
+        }
+    }
 }
+ 
+
+
 
             
