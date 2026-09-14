@@ -91,7 +91,43 @@ namespace BancoSENAIAPI.Controllers
             return Ok(documentos);
         }
 
+        // DOWNLOAD
+        [HttpGet("download/{id}")]
+        public IActionResult Download(int id)
+        {
+            var documento = _documentosMetadados
+                .FirstOrDefault(d => d.Id == id);
 
+            if (documento == null)
+            {
+                return NotFound(new
+                {
+                    message = "Documento não encontrado."
+                });
+            }
+
+            if (!System.IO.File.Exists(documento.Caminho))
+            {
+                return NotFound(new
+                {
+                    message = "Arquivo não encontrado no servidor."
+                });
+            }
+
+            byte[] fileBytes =
+                System.IO.File.ReadAllBytes(documento.Caminho);
+
+            string nomeArquivo =
+                documento.Name + documento.Extensao;
+
+            return File(
+                fileBytes,
+                "application/octet-stream",
+                nomeArquivo);
+        }
+
+
+        
 
     }
 }
