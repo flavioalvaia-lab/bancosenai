@@ -67,5 +67,7 @@ namespace BancoSENAIAPI.Controllers
             _agencias.Remove(agencia);
             return Ok(new { message = "Agência excluída com sucesso." }); // Status 200 [6]
         }
+
+
     }
 }
