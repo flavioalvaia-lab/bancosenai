@@ -16,10 +16,14 @@ namespace BancoSENAIAPI.Controllers
 
         private static int _nextId = 1;
 
-
         private const long TAMANHO_MAXIMO = 2 * 1024 * 1024;
 
-
+        private readonly string[] extensoesPermitidas =
+        {
+            ".pdf",
+            ".jpg",
+            ".png"
+        };
 
 
         [HttpPost("upload/{codigoCliente}")]
@@ -27,12 +31,10 @@ namespace BancoSENAIAPI.Controllers
             int codigoCliente,
             IFormFile arquivo)
         {
-
             if (arquivo == null || arquivo.Length == 0)
             {
                 return BadRequest("Nenhum arquivo foi enviado.");
             }
-
 
             if (arquivo.Length > TAMANHO_MAXIMO)
             {
@@ -40,11 +42,16 @@ namespace BancoSENAIAPI.Controllers
                     "O arquivo excede o limite máximo permitido de 2 MB.");
             }
 
-
             string extensao =
                 Path.GetExtension(arquivo.FileName).ToLower();
 
 
+            if (!extensoesPermitidas.Contains(extensao))
+            {
+                return BadRequest(
+                    "Extensão de arquivo não permitida. " +
+                    "Apenas arquivos .pdf, .jpg e .png são aceitos.");
+            }
 
             string pastaCliente =
                 Path.Combine(_caminhoRaiz, codigoCliente.ToString());
