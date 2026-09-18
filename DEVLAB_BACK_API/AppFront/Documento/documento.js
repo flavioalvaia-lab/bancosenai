@@ -177,6 +177,39 @@ async function baixarDocumento(id) {
         alert("Não foi possível baixar o documento.");
     }
 }
+async function excluirDocumento(id) {
 
+    const confirmar = confirm(
+        "Deseja realmente excluir este documento?"
+    );
 
+    if (!confirmar) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${URL_API}/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (!response.ok) {
+
+            throw new Error("Erro ao excluir documento.");
+        }
+
+        alert("Documento excluído com sucesso!");
+
+        // Atualiza a tabela depois da exclusão
+        await buscarDocumentos();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert("Não foi possível excluir o documento.");
+    }
 }
