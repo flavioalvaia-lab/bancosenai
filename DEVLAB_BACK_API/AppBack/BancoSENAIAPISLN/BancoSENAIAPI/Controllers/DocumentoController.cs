@@ -16,8 +16,16 @@ namespace BancoSENAIAPI.Controllers
 
         private static int _nextId = 1;
 
+        private const long TAMANHO_MAXIMO = 2 * 1024 * 1024;
 
-        // UPLOAD
+        private readonly string[] extensoesPermitidas =
+        {
+            ".pdf",
+            ".jpg",
+            ".png"
+        };
+
+
         [HttpPost("upload/{codigoCliente}")]
         public async Task<IActionResult> AnexarArquivo(
             int codigoCliente,
@@ -28,6 +36,23 @@ namespace BancoSENAIAPI.Controllers
                 return BadRequest("Nenhum arquivo foi enviado.");
             }
 
+            if (arquivo.Length > TAMANHO_MAXIMO)
+            {
+                return BadRequest(
+                    "O arquivo excede o limite máximo permitido de 2 MB.");
+            }
+
+            string extensao =
+                Path.GetExtension(arquivo.FileName).ToLower();
+
+
+            if (!extensoesPermitidas.Contains(extensao))
+            {
+                return BadRequest(
+                    "Extensão de arquivo não permitida. " +
+                    "Apenas arquivos .pdf, .jpg e .png são aceitos.");
+            }
+
             string pastaCliente =
                 Path.Combine(_caminhoRaiz, codigoCliente.ToString());
 
@@ -35,8 +60,6 @@ namespace BancoSENAIAPI.Controllers
             {
                 Directory.CreateDirectory(pastaCliente);
             }
-
-            string extensao = Path.GetExtension(arquivo.FileName);
 
             string nomeOriginal =
                 Path.GetFileNameWithoutExtension(arquivo.FileName);
@@ -72,7 +95,6 @@ namespace BancoSENAIAPI.Controllers
         }
 
 
-        // LISTAGEM
         [HttpGet("listar/{codigoCliente}")]
         public IActionResult ListarDocumentos(int codigoCliente)
         {
@@ -91,7 +113,7 @@ namespace BancoSENAIAPI.Controllers
             return Ok(documentos);
         }
 
-        // DOWNLOAD
+
         [HttpGet("download/{id}")]
         public IActionResult Download(int id)
         {
@@ -127,7 +149,6 @@ namespace BancoSENAIAPI.Controllers
         }
 
 
-        // EXCLUSÃO
         [HttpDelete("excluir/{id}")]
         public IActionResult Excluir(int id)
         {
@@ -154,7 +175,5 @@ namespace BancoSENAIAPI.Controllers
                 message = "Documento excluído com sucesso."
             });
         }
-
     }
 }
-        
