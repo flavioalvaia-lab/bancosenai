@@ -203,7 +203,6 @@ async function excluirDocumento(id) {
 
         alert("Documento excluído com sucesso!");
 
-        // Atualiza a tabela depois da exclusão
         await buscarDocumentos();
 
     } catch (erro) {
