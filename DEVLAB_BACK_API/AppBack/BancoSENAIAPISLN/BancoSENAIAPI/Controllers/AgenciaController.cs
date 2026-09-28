@@ -1,5 +1,7 @@
 ﻿using BancoSENAIAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using BancoSENAIAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BancoSENAIAPI.Controllers
 {
@@ -7,6 +9,14 @@ namespace BancoSENAIAPI.Controllers
     [Route("api/v1/[controller]")]
     public class AgenciaController : ControllerBase
     {
+        private readonly AppDbContext _context;
+
+        public AgenciaController(AppDbContext context)
+        {
+            _context = context;
+        }
+        
+        
         private static List<Agencia> _agencias = new List<Agencia>
         {
             new Agencia { NumeroAgencia = 1001, Cidade = "Aracaju", SiglaEstado = "SE" },
@@ -15,9 +25,10 @@ namespace BancoSENAIAPI.Controllers
         };
 
         [HttpGet]
-        public IActionResult ListarTodas()
+        public async Task<IActionResult> ListarTodas()
         {
-            return Ok(_agencias);
+            var agencias = await _context.Agencia.ToListAsync();
+            return Ok(agencias);
         }
 
         [HttpPost]
